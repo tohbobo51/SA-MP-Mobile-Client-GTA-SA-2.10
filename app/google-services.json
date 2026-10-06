@@ -1,0 +1,25 @@
+{
+  "project_info": {
+    "project_number": "384675259373",
+    "project_id": "russia-game",
+    "storage_bucket": "russia-game.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:384675259373:android:f3f8e21ddafb7bf16a3de4",
+        "android_client_info": {
+          "package_name": "com.russia.game"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC64iePRG-COuNFYXgrCbWUs6UR8wpgkJs"
+        }
+      ],
+      "services": {}
+    }
+  ],
+  "configuration_version": "1"
+}
