@@ -23,7 +23,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import android.os.Build
-import android.view.WindowManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.russia.game.R
@@ -44,7 +43,7 @@ class Samp : GTASA() {
     private external fun initSAMP(maxFps: Float, directory: String)
 
     
-    private fun hideSystemUI() {
+    override fun hideSystemUI() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 WindowCompat.setDecorFitsSystemWindows(window, false)
