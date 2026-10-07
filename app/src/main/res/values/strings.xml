@@ -1,52 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vice Side Mobile</string>
+    <string name="common_google_play_services_notification_ticker">Google Play services error</string>
+    <string name="common_google_play_services_notification_needs_installation_title">Aplikasi membutuhkan instalasi Layanan Google Play.</string>
+    <string name="common_google_play_services_notification_needs_update_title">Aplikasi membutuhkan pembaruan Layanan Google Play.</string>
+    <string name="common_google_play_services_needs_enabling_title">Aplikasi membutuhkan Layanan Google Play untuk diaktifkan.</string>
+    <string name="common_google_play_services_error_notification_requested_by_msg">Diminta oleh %1</string>
+    <string name="common_google_play_services_install_title">Dapatkan Layanan Google Play</string>
+    <string name="common_google_play_services_install_text_phone">"Aplikasi ini tidak akan berjalan tanpa Layanan Google Play, yang tidak ada di ponsel Anda."</string>
+    <string name="common_google_play_services_install_text_tablet">"Aplikasi ini tidak akan berjalan tanpa Layanan Google Play, yang tidak ada di tablet Anda."</string>
+    <string name="common_google_play_services_install_button">Dapatkan Layanan Google Play</string>
+    <string name="common_google_play_services_enable_title">Aktifkan Layanan Google Play</string>
+    <string name="common_google_play_services_enable_text">"Aplikasi ini tidak akan berfungsi kecuali Anda mengaktifkan Layanan Google Play."</string>
+    <string name="common_google_play_services_enable_button">Aktifkan Layanan Google Play</string>
+    <string name="common_google_play_services_update_title">Perbarui Layanan Google Play</string>
+    <string name="common_google_play_services_update_text">"Aplikasi ini tidak akan berjalan kecuali Anda memperbarui Layanan Google Play."</string>
+    <string name="common_google_play_services_network_error_title">Kesalahan Jaringan</string>
+    <string name="common_google_play_services_network_error_text">Koneksi data diperlukan untuk terhubung ke Layanan Google Play.</string>
+    <string name="common_google_play_services_invalid_account_title">Akun Tidak Valid</string>
+    <string name="common_google_play_services_invalid_account_text">Akun yang ditentukan tidak ada di perangkat ini. Silakan pilih akun lain.</string>
+    <string name="common_google_play_services_unknown_issue">Masalah tidak diketahui pada Layanan Google Play.</string>
+    <string name="common_google_play_services_unsupported_title">Layanan Google Play</string>
+    <string name="common_google_play_services_unsupported_text">Layanan Google Play tidak didukung oleh perangkat Anda. Silakan hubungi produsen.</string>
+    <string name="common_google_play_services_unsupported_date_text">Tanggal pada perangkat tampak salah. Silakan periksa tanggal perangkat.</string>
+    <string name="common_google_play_services_update_button">Perbarui</string>
+    <string name="common_signin_button_text">Masuk</string>
+    <string name="common_signin_button_text_long">Masuk dengan Google</string>
+    <string name="wallet_buy_button_place_holder">Beli dengan Google</string>
     <string name="hello">GTA San Andreas</string>
-    <string name="hello_world">Vice Side Roleplay</string>
-    <string name="menu_settings">Pengaturan</string>
-
-    <!-- Downloader & Loader Strings -->
-    <string name="loading_game_files">Mengunduh data game...</string>
-    <string name="downloading_files">Mengunduh data game..</string>
-    <string name="downloadinfobottom"><![CDATA[<b>Perhatian!</b> <font color='#8E8E93'>Jangan tutup aplikasi selama proses instalasi berlangsung.</font>]]></string>
-    <string name="repeat_download">Coba Lagi</string>
-    <string name="image_load">Memuat gambar...</string>
-    <string name="notification_download_complete">Unduhan selesai</string>
-    <string name="notification_download_failed">Unduhan gagal</string>
-    <string name="text_verifying_download">Memverifikasi Data</string>
-    <string name="text_validation_complete">Validasi file selesai.</string>
-    <string name="text_validation_failed">Validasi file gagal.</string>
+    <string name="text_paused_cellular">Apakah Anda ingin melanjutkan pengunduhan melalui koneksi seluler? Tergantung paket data Anda, ini mungkin memerlukan biaya.</string>
+    <string name="text_paused_cellular_2">Jika Anda memilih untuk tidak mengunduh melalui koneksi seluler, unduhan akan otomatis dilanjutkan saat Wi-Fi tersedia.</string>
+    <string name="text_button_resume_cellular">Lanjutkan unduhan</string>
+    <string name="text_button_wifi_settings">Pengaturan Wi-Fi</string>
+    <string name="text_verifying_download">Memverifikasi Unduhan</string>
+    <string name="text_validation_complete">Validasi File Selesai.</string>
+    <string name="text_validation_failed">Validasi File Gagal.</string>
     <string name="text_button_pause">Jeda Unduhan</string>
     <string name="text_button_resume">Lanjutkan Unduhan</string>
     <string name="text_button_cancel">Batal</string>
-
-    <!-- Player Dialog & HUD -->
+    <string name="text_button_cancel_verify">Batal Verifikasi</string>
+    <string name="notification_download_complete">Unduhan selesai</string>
     <string name="players_list_header_dialog">Daftar Pemain</string>
     <string name="players_list_header_first_column">ID</string>
+    <string name="players_list_header_fourth_column">Ping</string>
     <string name="players_list_header_second_column">Nama Pemain</string>
     <string name="players_list_header_third_column">Level</string>
-    <string name="players_list_header_fourth_column">Ping</string>
     <string name="players_list_search_hint">Cari pemain...</string>
-    <string name="dialog_join_from_launcher_msg">Silakan masuk ke dalam game melalui launcher</string>
+    <string name="notification_download_failed">Unduhan gagal</string>
+    <string name="state_unknown">Memulai...</string>
+    <string name="state_idle">Menunggu unduhan dimulai</string>
+    <string name="state_fetching_url">Mencari sumber data...</string>
+    <string name="state_connecting">Menghubungkan ke server unduhan...</string>
+    <string name="state_downloading">Mengunduh data...</string>
+    <string name="state_completed">Unduhan selesai</string>
+    <string name="state_paused_network_unavailable">Unduhan dijeda karena tidak ada jaringan</string>
+    <string name="state_paused_network_setup_failure">Unduhan dijeda. Periksa koneksi internet</string>
+    <string name="state_paused_by_request">Unduhan dijeda</string>
+    <string name="state_paused_wifi_unavailable">Unduhan dijeda karena Wi-Fi tidak tersedia</string>
+    <string name="state_paused_wifi_disabled">Unduhan dijeda karena Wi-Fi nonaktif</string>
+    <string name="state_paused_roaming">Unduhan dijeda saat roaming</string>
+    <string name="state_paused_sdcard_unavailable">Unduhan dijeda karena penyimpanan tidak tersedia</string>
+    <string name="state_failed_unlicensed">Unduhan gagal: lisensi tidak valid</string>
+    <string name="state_failed_fetching_url">Unduhan gagal: file tidak ditemukan</string>
+    <string name="state_failed_sdcard_full">Unduhan gagal: memori penuh</string>
+    <string name="state_failed_cancelled">Unduhan dibatalkan</string>
+    <string name="state_failed">Unduhan gagal</string>
+    <string name="kilobytes_per_second">%1$s KB/dtk</string>
+    <string name="time_remaining">Sisa waktu: %1$s</string>
+    <string name="time_remaining_notification">Sisa %1$s</string>
+    <string name="hello_world">Vice Side Roleplay</string>
+    <string name="menu_settings">Pengaturan</string>
+    <string name="dialog_join_from_launcher_msg">Silakan masuk ke dalam game menggunakan launcher</string>
     <string name="dialog_join_from_launcher_ok">Oke</string>
-
-    <!-- AutoShop & Gameplay Strings -->
+    <string name="downloadinfobottom">Perhatian! <font color="#5E5E5E">Jangan tutup aplikasi selama proses instalasi berlangsung.</font></string>
+    <string name="image_load">Memuat gambar...</string>
+    <string name="arrow_left"><![CDATA[<]]></string>
+    <string name="string_right"><![CDATA[>]]></string>
     <string name="autoshop_max_speed">Kecepatan Maksimal</string>
     <string name="autoshop_acceleration">Akselerasi 0 - 100</string>
     <string name="autoshop_available">Tersedia untuk dibeli</string>
     <string name="autoshop_pricelabel">Harga Kendaraan:</string>
     <string name="hud_no_load">HUD dimuat</string>
     <string name="recovery_pass"><u>Lupa kata sandi?</u></string>
-    <string name="arrow_left"><![CDATA[<]]></string>
-    <string name="string_right"><![CDATA[>]]></string>
-
-    <!-- Connection states -->
-    <string name="state_unknown">Memulai...</string>
-    <string name="state_idle">Menunggu unduhan...</string>
-    <string name="state_connecting">Menghubungkan ke server...</string>
-    <string name="state_downloading">Mengunduh data...</string>
-    <string name="state_completed">Unduhan selesai</string>
-    <string name="state_failed">Unduhan gagal</string>
-    <string name="kilobytes_per_second">%1$s KB/dtk</string>
-    <string name="time_remaining">Sisa waktu: %1$s</string>
+    <string name="egor_plakapenka_194_kdkd"><font color="#ffffff">- egor_plakapenka[112]:</font><font color="#ffffff"> kdkdkd </font></string>
+    <string name="loading_game_files">Mengunduh data game...</string>
+    <string name="downloading_files">Mengunduh data game..</string>
+    <string name="repeat_download">Coba Lagi</string>
 </resources>
