@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:layout_weight="1.0"
-                android:text="Скачивание файлов игры.."
+                android:text="Mengunduh data game.."
                 android:fontFamily="@font/roboto_medium"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_8sdp" />
@@ -184,7 +184,7 @@
         android:foreground="?android:attr/selectableItemBackgroundBorderless"
         android:layout_height="@dimen/_40sdp"
         android:layout_marginBottom="@dimen/_20sdp"
-        android:text="Повторить"
+        android:text="Coba Lagi"
         app:layout_constraintBottom_toTopOf="@+id/textView15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

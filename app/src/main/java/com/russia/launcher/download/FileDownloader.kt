@@ -95,7 +95,7 @@ class FileDownloader(
                 lastTime = currentTime
             }
 
-            val text = String.format("%s из %s (%s / сек.)",
+            val text = String.format("%s dari %s (%s / dtk)",
                 BytesTo.convert(totalDownloadedSize),
                 BytesTo.convert(totalFilesSize),
                 BytesTo.convert(curSpeed)
@@ -152,7 +152,7 @@ class FileDownloader(
 
         //
         loaderActivity.runOnUiThread {
-            loaderActivity.speedText?.text = "Распаковка ..."
+            loaderActivity.speedText?.text = "Mengekstrak data..."
         }
 
         while (zipEntry != null) {

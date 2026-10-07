@@ -11,11 +11,6 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.util.zip.Adler32
 import java.util.zip.CheckedInputStream
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
 
 object CacheChecker {
     private val NOT_CHECK_BY_HASH_FILES = setOf(
@@ -25,18 +20,15 @@ object CacheChecker {
         "Adjustable.cfg",
         "gtasatelem.set"
     )
-
     private const val CACHE_FILE_NAME = "last_files.dat"
 
     fun setFilesList(context: Context, gameFileInfoDto: GameFileInfoDto) {
         val iterator = gameFileInfoDto.files.iterator()
-
         while (iterator.hasNext()) {
             val file = iterator.next()
             for (ext in MainUtils.usselesTex) {
                 if (file.path.contains(ext)) {
-                    println("Удаление файла: ${file.path}")
-                    iterator.remove() // Удаляем файл из списка
+                    iterator.remove()
                 }
             }
         }
@@ -51,7 +43,6 @@ object CacheChecker {
             ex.printStackTrace()
         }
     }
-
 
     @JvmStatic
     fun getFilesList(context: Context): GameFileInfoDto {
@@ -69,32 +60,61 @@ object CacheChecker {
     }
 
     @JvmStatic
+    fun migrateNestedDir(src: File, dest: File) {
+        val list = src.listFiles() ?: return
+        for (f in list) {
+            val target = File(dest, f.name)
+            if (f.isDirectory) {
+                if (!target.exists()) target.mkdirs()
+                migrateNestedDir(f, target)
+                f.delete()
+            } else {
+                if (target.exists()) target.delete()
+                f.renameTo(target)
+            }
+        }
+        src.delete()
+    }
+
+    @JvmStatic
     fun isGameCacheValid(activity: Activity): Boolean {
+        val externalFilesDir = activity.getExternalFilesDir(null) ?: return true
+        val nestedFiles = File(externalFilesDir, "files")
+        if (nestedFiles.exists() && nestedFiles.isDirectory) {
+            migrateNestedDir(nestedFiles, externalFilesDir)
+        }
+
+        val gtaDat = File(externalFilesDir, "data/gta.dat")
+        val animImg = File(externalFilesDir, "anim/anim.img")
+        val sampIde = File(externalFilesDir, "SAMP/samp.ide")
+        if (gtaDat.exists() || animImg.exists() || sampIde.exists()) {
+            return true
+        }
         return getInvalidFilesList(activity).isEmpty()
     }
 
     @JvmStatic
     fun getInvalidFilesList(activity: Activity): MutableList<FileInfo> {
-        val filesToReload: MutableList<FileInfo> = mutableListOf()
-        val externalFilesDir = activity.getExternalFilesDir(null)
-        val allFiles = getFilesList(activity).files
-
-        for (file in allFiles) {
-            val localFile = File(externalFilesDir, file.path)
-
-            if(!localFile.exists()) {
-                filesToReload.add(file)
-                continue
-            }
-
-            if(file.path !in NOT_CHECK_BY_HASH_FILES) {
-                val hash = calculateAdler32Checksum(localFile)
-
-                if(hash != file.hash)
-                    filesToReload.add(file)
-            }
+        val externalFilesDir = activity.getExternalFilesDir(null) ?: return mutableListOf()
+        val nestedFiles = File(externalFilesDir, "files")
+        if (nestedFiles.exists() && nestedFiles.isDirectory) {
+            migrateNestedDir(nestedFiles, externalFilesDir)
         }
 
+        val gtaDat = File(externalFilesDir, "data/gta.dat")
+        val animImg = File(externalFilesDir, "anim/anim.img")
+        if (gtaDat.exists() || animImg.exists()) {
+            return mutableListOf()
+        }
+
+        val filesToReload: MutableList<FileInfo> = mutableListOf()
+        val allFiles = getFilesList(activity).files
+        for (file in allFiles) {
+            val localFile = File(externalFilesDir, file.path)
+            if (!localFile.exists()) {
+                filesToReload.add(file)
+            }
+        }
         return filesToReload
     }
 
@@ -103,21 +123,15 @@ object CacheChecker {
             val adler32 = Adler32()
             val buffer = ByteArray(4096)
             var checksum: Long = -1
-
             FileInputStream(file).use { inputStream ->
                 val checkedInputStream = CheckedInputStream(inputStream, adler32)
                 while (checkedInputStream.read(buffer) != -1) {
-                    // Пропустите эту строку, так как Adler32 уже обновлен автоматически
                 }
                 checksum = checkedInputStream.checksum.value
             }
-
             return checksum
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             return -1
         }
-
     }
-
 }

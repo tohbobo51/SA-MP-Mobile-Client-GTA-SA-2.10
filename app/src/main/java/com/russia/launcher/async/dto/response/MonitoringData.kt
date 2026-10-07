@@ -17,7 +17,20 @@ interface MonitoringDataLoaderListener {
 
 data class MonitoringData(
     var news: List<News> = listOf(),
-    var servers: List<Servers> = listOf()
+    var servers: List<Servers> = listOf(
+        Servers(
+            color = "#A855F7",
+            lock = 0,
+            serverID = "1",
+            mult = "x2",
+            name = "VICE SIDE ROLEPLAY",
+            online = 150,
+            maxonline = 1000,
+            port = 10125,
+            ip = "142.132.203.47",
+            onlinePer30Min = 150
+        )
+    )
 ) : Serializable
 
 object ServersList {

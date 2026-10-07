@@ -10,7 +10,7 @@ android {
     productFlavors {
         ver_release {
             dimension "version"
-            manifestPlaceholders = [appName:"MOBILE RUSSIA"]
+            manifestPlaceholders = [appName:"VICE SIDE MOBILE"]
             firebaseCrashlytics {
                 nativeSymbolUploadEnabled false
             }

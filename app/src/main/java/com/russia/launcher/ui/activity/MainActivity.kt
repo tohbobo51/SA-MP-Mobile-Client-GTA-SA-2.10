@@ -173,15 +173,22 @@ class MainActivity : AppCompatActivity() {
         val bbbbbbbb = File(getExternalFilesDir(null).toString() + "/models/MINFO.BIN")
         bbbbbbbb.delete()
 
-        val nickname = NativeStorage.getClientProperty("name", this)
-        val selectedServer = NativeStorage.getClientProperty("server", this)
+        var nickname = NativeStorage.getClientProperty("name", this)
+        var selectedServer = NativeStorage.getClientProperty("server", this)
+        if (StringUtils.isBlank(selectedServer)) {
+            selectedServer = "1"
+            NativeStorage.addClientProperty("server", "1", this)
+        }
+        // Pastikan IP dan Port default Vice Side tersimpan
+        NativeStorage.addClientProperty("ip", "142.132.203.47", this)
+        NativeStorage.addClientProperty("port", "10125", this)
         if (StringUtils.isBlank(nickname)) {
-            ActivityServiceImpl.showErrorMessage("Укажите ник!", this)
+            ActivityServiceImpl.showErrorMessage("Silakan atur Nickname di pengaturan!", this)
             onClickSettings()
             return
         }
         if (StringUtils.isBlank(selectedServer)) {
-            ActivityServiceImpl.showErrorMessage("Выберите сервер", this)
+            ActivityServiceImpl.showErrorMessage("Silakan pilih server!", this)
             onClickMonitoring()
             return
         }
