@@ -38,21 +38,71 @@ class Samp : GTASA() {
 
     private external fun initSAMP(maxFps: Float, directory: String)
 
+    
+    private fun hideSystemUI() {
+        try {
+            window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+            )
+        } catch (ignored: Exception) {}
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            hideSystemUI()
+        }
+    }
+
+    private fun writeSampConfig() {
+        try {
+            val host = intent?.getStringExtra("server") ?: intent?.getStringExtra("ip") ?: "142.132.203.47"
+            val port = intent?.getStringExtra("port") ?: intent?.getIntExtra("port", 10125)?.toString() ?: "10125"
+            val nickname = intent?.getStringExtra("name") ?: intent?.getStringExtra("nick") ?: "ViceSide_Player"
+
+            val targetDirs = listOfNotNull(filesDir, getExternalFilesDir(null))
+            for (dir in targetDirs) {
+                val sampFolder = File(dir, "SAMP")
+                if (!sampFolder.exists()) sampFolder.mkdirs()
+                val iniFile = File(sampFolder, "settings.ini")
+                val content = "[client]\n" +
+                        "ip=$host\n" +
+                        "port=$port\n" +
+                        "name=$nickname\n" +
+                        "password=\n" +
+                        "autologin=0\n" +
+                        "server=0\n" +
+                        "debug=0\n" +
+                        "[gui]\n" +
+                        "Font=visby-round-cf-extra-bold.ttf\n" +
+                        "fps=60\n"
+                iniFile.writeText(content)
+                Log.d("SampConfig", "Wrote settings.ini to: " + iniFile.absolutePath)
+            }
+        } catch (e: Exception) {
+            Log.w("SampConfig", "Failed to write settings.ini: " + e.message)
+        }
+    }
+
     override fun onCreate(bundle: Bundle?) {
-
+        hideSystemUI()
         activity = this
-
         val display = Companion.windowManager.defaultDisplay
         maxFps = display.refreshRate
-
         val internalDir = File(filesDir, "AudioConfig")
         clearDir(internalDir)
         copyFromAssets(internalDir)
-
+        writeSampConfig()
         initSAMP(maxFps, filesDir.toString())
         super.onCreate(bundle)
         init()
     }
+
     private fun clearDir(dir: File) {
         try {
             if (dir.exists()) {

@@ -59,7 +59,12 @@
 
         <activity
             android:name="com.russia.game.core.Samp"
-            android:exported="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="com.viceside.LAUNCH_GAME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
             android:launchMode="singleTask"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation|uiMode|screenSize"
