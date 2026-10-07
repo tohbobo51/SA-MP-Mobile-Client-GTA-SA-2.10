@@ -8,11 +8,12 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="colorAccent">#ffF6D20F</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="colorSurface">#ffF6D20F</item>
     </style>
 
     <style name="AppBaseTheme" parent="Theme.MaterialComponents.Light" />
-
 
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:forceDarkAllowed">false</item>
@@ -20,6 +21,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.FullScreenDialog" parent="Theme.MaterialComponents.Light.NoActionBar">
@@ -39,15 +43,19 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.Splash">
         <item name="android:windowBackground">@drawable/back_splash</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="TextStyle" parent="@android:style/TextAppearance">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">#aacbb4</item>
     </style>
-
-    </resources>
+</resources>

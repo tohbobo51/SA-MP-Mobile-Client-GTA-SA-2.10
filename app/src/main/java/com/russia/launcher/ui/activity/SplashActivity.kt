@@ -1,90 +1,40 @@
 package com.russia.launcher.ui.activity
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.gson.GsonBuilder
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.russia.game.core.Samp
 import com.russia.game.databinding.ActivitySplashBinding
-import com.russia.launcher.NetworkService
-import com.russia.launcher.async.dto.response.GameFileInfoDto
-import com.russia.launcher.async.dto.response.MonitoringDataLoaderListener
-import com.russia.launcher.async.dto.response.ServersList
-import com.russia.launcher.async.task.CacheChecker
-import com.russia.launcher.config.Config
-import okhttp3.OkHttpClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.russia.launcher.storage.NativeStorage
 import java.io.File
-import java.util.concurrent.TimeUnit
-import kotlin.system.exitProcess
 
 class SplashActivity : AppCompatActivity() {
 
-    private var permissionsGranded = false
-    private var apkVersionChecked = true
-    private var monitoringDataLoaded = true
-    private var filesListLoaded = true
-    private var animationEnded = false
     private var hasStarted = false
-
     private val REQUEST_ID = 228
-    private val permissionList = arrayOf(
-        android.Manifest.permission.RECORD_AUDIO
-    )
-
-    private var networkService: NetworkService
     private lateinit var binding: ActivitySplashBinding
 
-    init {
-        val gson = GsonBuilder().setLenient().create()
-        val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(5, TimeUnit.SECONDS)
-            .writeTimeout(5, TimeUnit.SECONDS)
-            .build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl(Config.LIVE_RUSSIA_RESOURCE_SERVER_URL)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .client(okHttpClient)
-            .build()
-        networkService = retrofit.create(NetworkService::class.java)
-    }
-
-    private val isOnline: Boolean
-        get() {
-            val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-            return cm.activeNetworkInfo != null
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        try {
-            FirebaseCrashlytics.getInstance().deleteUnsentReports()
-            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
-        } catch (ignored: Exception) {}
-
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Sembunyikan tombol navigasi (Back, Home, Recents) secara permanen (Immersive Sticky)
         hideSystemUI()
+
+        // Pastikan settings.ini tersimpan
+        NativeStorage.ensureSettingsExist(this)
 
         // Jika diluncurkan dari Vice Side Launcher dengan parameter server/port, langsung buka Samp
         val serverHost = intent?.getStringExtra("server") ?: intent?.getStringExtra("ip")
@@ -98,48 +48,35 @@ class SplashActivity : AppCompatActivity() {
             return
         }
 
-        binding.lottieLogo.addAnimatorListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                animationEnded = true
-                startIfReady()
-            }
-        })
-
-        // Safety fallback: Jangan biarkan stuck di logo jika animasi loop atau server lambat
-        Handler(Looper.getMainLooper()).postDelayed({
-            animationEnded = true
-            startIfReady()
-        }, 1200)
-
-        // Muat server monitoring di background tanpa memblokir
-        try {
-            ServersList.load(
-                this,
-                networkService,
-                object : MonitoringDataLoaderListener {
-                    override fun monitoringDataLoadedSuccess() {
-                        monitoringDataLoaded = true
-                        startIfReady()
-                    }
-                }
-            )
-        } catch (ignored: Exception) {
-            monitoringDataLoaded = true
-        }
-
-        loadFilesList()
         checkPermissions()
+
+        // Delay singkat 800ms lalu otomatis masuk
+        Handler(Looper.getMainLooper()).postDelayed({
+            proceedToGame()
+        }, 800)
     }
 
     private fun hideSystemUI() {
-        window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_FULLSCREEN
-        )
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                WindowCompat.setDecorFitsSystemWindows(window, false)
+                val controller = WindowCompat.getInsetsController(window, window.decorView)
+                controller?.hide(WindowInsetsCompat.Type.systemBars())
+                controller?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            }
+        } catch (ignored: Throwable) {}
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -149,36 +86,23 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadFilesList() {
-        val call = networkService.filesList
-        call?.enqueue(object : Callback<GameFileInfoDto> {
-            override fun onResponse(call: Call<GameFileInfoDto>, response: Response<GameFileInfoDto>) {
-                if (response.isSuccessful) {
-                    response.body()?.let { CacheChecker.setFilesList(this@SplashActivity, it) }
-                }
-                filesListLoaded = true
-                startIfReady()
-            }
-
-            override fun onFailure(call: Call<GameFileInfoDto>, t: Throwable) {
-                filesListLoaded = true
-                startIfReady()
-            }
-        })
+    override fun onResume() {
+        super.onResume()
+        hideSystemUI()
     }
 
     private fun checkPermissions() {
-        val permissionsToRequest = mutableListOf<String>()
-        for (permission in permissionList) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                permissionsToRequest.add(permission)
+        val permissions = mutableListOf<String>()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(android.Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
-        if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), REQUEST_ID)
-        } else {
-            permissionsGranded = true
-            startIfReady()
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(android.Manifest.permission.RECORD_AUDIO)
+        }
+        if (permissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_ID)
         }
     }
 
@@ -188,28 +112,61 @@ class SplashActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_ID) {
-            permissionsGranded = true
-            startIfReady()
-        }
+        proceedToGame()
     }
 
-    fun startIfReady() {
-        if (hasStarted) return
-        if (permissionsGranded && animationEnded) {
-            hasStarted = true
-            // Jika file game sudah ada di storage, langsung buka Samp
-            val extDir = getExternalFilesDir(null)
-            val hasData = File(extDir, "data/gta.dat").exists() || File(extDir, "texdb").exists()
-            if (hasData) {
-                val gameIntent = Intent(this, Samp::class.java).apply {
-                    putExtras(intent)
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+    private fun checkGameDataExists(): Boolean {
+        val extDir = getExternalFilesDir(null) ?: return false
+
+        // Auto-migrate jika user mengekstrak dengan folder "files" bersarang
+        try {
+            val nestedFiles = File(extDir, "files")
+            if (nestedFiles.exists() && nestedFiles.isDirectory) {
+                nestedFiles.listFiles()?.forEach { file ->
+                    file.renameTo(File(extDir, file.name))
                 }
-                startActivity(gameIntent)
-            } else {
-                startActivity(Intent(this, MainActivity::class.java))
             }
+        } catch (ignored: Exception) {}
+
+        // Cek data file (case insensitive)
+        val dataDir = File(extDir, "data")
+        val dataDirCap = File(extDir, "DATA")
+        val texdbDir = File(extDir, "texdb")
+        val texdbDirCap = File(extDir, "TEXDB")
+        val modelsDir = File(extDir, "models")
+        val animDir = File(extDir, "anim")
+
+        return (dataDir.exists() && (dataDir.list()?.isNotEmpty() == true)) ||
+               (dataDirCap.exists() && (dataDirCap.list()?.isNotEmpty() == true)) ||
+               (texdbDir.exists() && (texdbDir.list()?.isNotEmpty() == true)) ||
+               (texdbDirCap.exists() && (texdbDirCap.list()?.isNotEmpty() == true)) ||
+               (modelsDir.exists() && (modelsDir.list()?.isNotEmpty() == true)) ||
+               (animDir.exists() && (animDir.list()?.isNotEmpty() == true)) ||
+               File(extDir, "data/gta.dat").exists() ||
+               File(extDir, "anim/anim.img").exists()
+    }
+
+    private fun proceedToGame() {
+        if (hasStarted) return
+        hasStarted = true
+
+        val hasData = checkGameDataExists()
+        if (hasData) {
+            // Data game ditemukan! Langsung luncurkan Samp ke server Vice Side
+            val sampIntent = Intent(this, Samp::class.java).apply {
+                putExtra("server", "142.132.203.47")
+                putExtra("ip", "142.132.203.47")
+                putExtra("port", "10125")
+                val nick = NativeStorage.getClientProperty("name", this@SplashActivity) ?: "ViceSide_Player"
+                putExtra("nick", nick)
+                putExtra("name", nick)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            startActivity(sampIntent)
+            finish()
+        } else {
+            // Buka MainActivity launcher
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
     }

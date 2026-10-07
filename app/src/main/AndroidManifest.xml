@@ -17,6 +17,10 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+
     <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
     <uses-feature
         android:name="android.hardware.touchscreen"
@@ -38,9 +42,9 @@
         android:largeHeap="true"
         android:logo="@drawable/logo_splash"
         android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
         tools:replace="android:icon, android:label"
        >
-
         <activity
             android:name="com.russia.launcher.ui.activity.StoryActivity"
             android:exported="false"
@@ -59,18 +63,19 @@
 
         <activity
             android:name="com.russia.game.core.Samp"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="com.viceside.LAUNCH_GAME" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+            android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation|uiMode|screenSize"
             android:windowSoftInputMode="adjustPan"
             android:hardwareAccelerated="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="com.viceside.LAUNCH_GAME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="com.russia.launcher.ui.activity.SplashActivity"
@@ -82,22 +87,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.russia.launcher.ui.activity.MainActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar"/>
+
         <activity
             android:name="com.russia.launcher.ui.activity.LoaderActivity"
             android:screenOrientation="sensorLandscape"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name="com.russia.launcher.ui.activity.PolicyActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar"/>
-
     </application>
-
 </manifest>
