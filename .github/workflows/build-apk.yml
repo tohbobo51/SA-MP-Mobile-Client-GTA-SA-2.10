@@ -7,6 +7,9 @@ on:
     branches: [ "main", "master" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build Android APK
@@ -28,23 +31,21 @@ jobs:
         run: |
           echo "=== Accepting Android SDK Licenses ==="
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
           echo "=== Installing Android SDK 34 & NDK 28 ==="
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
             "platforms;android-34" \
             "build-tools;34.0.0" \
             "cmake;3.22.1" \
             "ndk;28.0.13004108" || true
-
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/28.0.13004108" >> $GITHUB_ENV
           echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/28.0.13004108" >> $GITHUB_ENV
 
       - name: Grant Execute Permission to Gradlew
         run: chmod +x gradlew
 
-      - name: Build APKs (Release & Debug)
+      - name: Build APKs
         run: |
-          ./gradlew assembleRelease --no-daemon --stacktrace
+          ./gradlew assembleVer_releaseRelease assembleVer_releaseDebug --no-daemon --stacktrace
 
       - name: Locate and Prepare Output APKs
         run: |
@@ -58,3 +59,20 @@ jobs:
           name: SA-MP-Mobile-NoobCoder-APKs
           path: output_apks/*.apk
           retention-days: 14
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: "SA-MP Mobile Client GTA SA 2.10 (Build #${{ github.run_number }})"
+          body: |
+            Automated Android APK build for SA-MP Mobile Client (GTA SA 2.10).
+            - Based on: `noobcooder-sys/SA-MP-Mobile-Client-GTA-SA-2.10-`
+            - Commit: `${{ github.sha }}`
+            - Workflow Run: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          files: output_apks/*.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

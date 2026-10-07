@@ -12,7 +12,7 @@ android {
             dimension "version"
             manifestPlaceholders = [appName:"MOBILE RUSSIA"]
             firebaseCrashlytics {
-                nativeSymbolUploadEnabled true
+                nativeSymbolUploadEnabled false
             }
 
             externalNativeBuild {
